@@ -1,0 +1,16 @@
+<package>
+  <description brief="attentionwhore">
+
+     attentionwhore
+
+  </description>
+  <author>student</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/attentionwhore</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+
+</package>
+
+

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<!-- general arm components fir inverse kinematic -->
+    <include file="$(find youbot_arm_navigation)/ros/launch/planning_environment.launch" />
+
+    <include file="$(find youbot_arm_navigation)/ros/launch/environment_server.launch">
+		<arg name="use_monitor" value="true" />
+		<arg name="use_collision_map" value="false" />
+    </include>
+
+    <include file="$(find youbot_arm_navigation)/ros/launch/constraint_aware_kinematics.launch" >
+        <arg name="use_monitor" value="true" />
+	<arg name="use_collision_map" value="false" />
+    </include>
+
+    <include file="$(find youbot_joint_trajectory_action)/ros/launch/youbot_joint_trajectory_action.launch" />
+</launch>

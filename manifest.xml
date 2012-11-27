@@ -1,0 +1,26 @@
+<package>
+  <description brief="attentionwhore">
+
+     attentionwhore
+
+  </description>
+  <author>student</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/attentionwhore</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="actionlib"/>
+  <depend package="tf"/>
+  <depend package="geometry_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="control_msgs"/>
+  <depend package="kinematics_msgs"/>
+  <depend package="trajectory_msgs"/>
+  <depend package="arm_navigation_msgs"/>
+  <depend package="brics_actuator"/>
+
+
+</package>
+
+
