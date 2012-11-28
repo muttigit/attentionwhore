@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('youbot_manipulation_examples')
+import roslib; roslib.load_manifest('attentionwhore')
 
 import rospy
 import threading
@@ -98,30 +98,35 @@ if __name__ == "__main__":
 	armpub = rospy.Publisher("/arm_1/arm_controller/position_command", brics_actuator.msg.JointPositions)
 	iks = SimpleIkSolver()
 	
-	x = 0.024 + 0.033 + 0.4
-	y = 0.0
-	z = 0.115
-	roll = 0.0
+	x = 0.2#0 #0.024 + 0.033 + 0.42
+	y = 0.2#-0.4
+	z = 0.2#0.2
+	roll = 0.0#-math.pi / 2.0 #0.0
 	pitch = math.pi / 2.0
-	yaw = 0.0
+	yaw = math.pi / 2.0 #0.0
 	
-	pose = iks.create_pose(x, y, z, roll, pitch, yaw)
-	
-	conf = iks.call_constraint_aware_ik_solver(pose)
-	if (conf):
-		# publish solution directly as joint positions
-		print conf
-		jp = brics_actuator.msg.JointPositions()
+	while (True):
+		x = float(raw_input("X: "))
+		y = float(raw_input("Y: "))
+		#z = float(raw_input("Z: "))
+		pose = iks.create_pose(x, y, z, roll, pitch, yaw)
+		print x, y, z, roll, pitch, yaw
 		
-		for i in range(5):
-			jv = brics_actuator.msg.JointValue()
-			jv.joint_uri = iks.joint_names[i]
-			jv.value = conf[i]
-			jv.unit = "rad"
-			jp.positions.append(jv)
+		conf = iks.call_constraint_aware_ik_solver(pose)
+		if (conf):
+			# publish solution directly as joint positions
+			print conf
+			jp = brics_actuator.msg.JointPositions()
 		
-		rospy.sleep(0.5)
-		print "publishing cmd"
-		armpub.publish(jp)
-	else:
-		print("IK solver didn't find a solution")
+			for i in range(5):
+				jv = brics_actuator.msg.JointValue()
+				jv.joint_uri = iks.joint_names[i]
+				jv.value = conf[i]
+				jv.unit = "rad"
+				jp.positions.append(jv)
+		
+			rospy.sleep(0.5)
+			print "publishing cmd"
+			armpub.publish(jp)
+		else:
+			print("IK solver didn't find a solution")
