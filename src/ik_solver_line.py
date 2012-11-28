@@ -121,12 +121,12 @@ if __name__ == "__main__":
 	iks = SimpleIkSolver()
 	
 	#x = 0.024 + 0.033 + 0.42
-	x = 0.4
-	y = 0.0
-	z = 0.005
-	roll = 0.0
+	x = 0.1#0.0
+	y = -0.4#-0.4
+	z = 0.2#0.122
+	roll = 0.0#-math.pi / 2.0 #0.0
 	pitch = math.pi / 2.0
-	yaw = 0.0
+	yaw = -math.pi / 2.0 #0.0
 	
 	#while (True):
 		#x = float(raw_input("X: "))
@@ -136,7 +136,6 @@ if __name__ == "__main__":
 	#rospy.sleep(1)
 		
 	for i in range(100):
-		x = 0.4
-		y = float(i)/1000
+		x = float(i)/1000
 		transmove(x, y, z, roll, pitch, yaw)
 
