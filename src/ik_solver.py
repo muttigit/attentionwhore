@@ -102,12 +102,13 @@ if __name__ == "__main__":
 	y = 0.0
 	z = 0.005
 	roll = 0.0
-	pitch = math.pi / 2.0
+	pitch = 0.0
 	yaw = 0.0
 	
 	while (True):
 		x = float(raw_input("X: "))
 		y = float(raw_input("Y: "))
+		z = float(raw_input("Z: "))
 		pose = iks.create_pose(x, y, z, roll, pitch, yaw)
 		print x, y, z, roll, pitch, yaw
 		

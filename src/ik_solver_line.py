@@ -120,7 +120,8 @@ if __name__ == "__main__":
 	armpub = rospy.Publisher("/arm_1/arm_controller/position_command", brics_actuator.msg.JointPositions)
 	iks = SimpleIkSolver()
 	
-	x = 0.024 + 0.033 + 0.42
+	#x = 0.024 + 0.033 + 0.42
+	x = 0.4
 	y = 0.0
 	z = 0.005
 	roll = 0.0
@@ -131,6 +132,9 @@ if __name__ == "__main__":
 		#x = float(raw_input("X: "))
 		#y = float(raw_input("Y: "))
 		#transmove(x, y, z, roll, pitch, yaw)
+	#transmove(x, y, z, roll, pitch, yaw)
+	#rospy.sleep(1)
+		
 	for i in range(100):
 		x = 0.4
 		y = float(i)/1000
