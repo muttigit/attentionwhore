@@ -2,9 +2,9 @@
 import roslib; roslib.load_manifest('attentionwhore')
 
 import rospy
-import threading
+#import threading
 import tf
-import time
+#import time
 import math
 import geometry_msgs.msg
 import kinematics_msgs.srv
@@ -56,7 +56,8 @@ class SimpleIkSolver:
 
 	def call_constraint_aware_ik_solver(self, goal_pose):
 		while (not self.received_state):
-			time.sleep(0.1)
+			#time.sleep(0.1)
+			rospy.sleep(0.1)
 		req = kinematics_msgs.srv.GetConstraintAwarePositionIKRequest()
 		req.timeout = rospy.Duration(0.5)
 		req.ik_request.ik_link_name = "arm_link_5"
@@ -90,6 +91,7 @@ class SimpleIkSolver:
 		return pose
 
 def transmove(x, y, z, roll, pitch, yaw):
+	#iks = SimpleIkSolver()
 	pose = iks.create_pose(x, y, z, roll, pitch, yaw)
 	print x, y, z, roll, pitch, yaw
 
@@ -115,7 +117,8 @@ def transmove(x, y, z, roll, pitch, yaw):
 
 if __name__ == "__main__":
 	rospy.init_node("simple_ik_solver")
-	time.sleep(0.5)
+	#time.sleep(0.5)
+	rospy.sleep(0.5)
 	
 	armpub = rospy.Publisher("/arm_1/arm_controller/position_command", brics_actuator.msg.JointPositions)
 	iks = SimpleIkSolver()

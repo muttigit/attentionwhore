@@ -75,6 +75,7 @@ def build_paths(pix, scalingFactor):
 					foundStartPoint = True
 					xNow = x
 					yNow = y
+					#
 					path.append((xNow*scalingFactor, yNow*scalingFactor))
 					pix[xNow, yNow] = 0
 					break
@@ -163,6 +164,25 @@ def safeImage(paths, size, scalingFactor, safePath):
 			image.putpixel((paths[i][j][0], paths[i][j][1]), (255,0,0))
 	image.save(safePath)
 
+def relativizer(paths, relativizFactor):
+	newPaths = []
+	for i in range(len(paths)):
+		newPath = []
+		for j in range(len(paths[i])):
+			x = paths[i][j][0] / float(relativizFactor)
+			y = paths[i][j][1] / float(relativizFactor)
+			if x > 0.22:
+				print "Error x"
+				print x
+			if y > 0.182:
+				print "Error y"
+				print y
+			newPath.append((x, y))
+		newPaths.append(newPath)
+	#print newPaths
+	return newPaths
+	
+
 def print_paths(paths):
 	for i in range(len(paths)):
 		print paths[i]
@@ -173,22 +193,26 @@ def talker(paths):
 	#pub = rospy.Publisher('/string', String)
 	pub = rospy.Publisher('/trajectory', Trajectory)
 	rospy.init_node('ik_solver_talker')
+	rospy.sleep(0.5)
 	for i in range(len(paths)-1):
 		if rospy.is_shutdown():
 			break
 		traject = Trajectory()
 		for j in range(len(paths[i])):
-			p = Point(paths[i][j][0],paths[i][j][0])
+			p = Point(paths[i][j][0],paths[i][j][1])
 			traject.trajectory.append(p)
+			#print traject.trajectory
 		pub.publish(traject)
-		#rospy.loginfo(traject)
+		rospy.sleep(5)
+		rospy.loginfo(traject)
 
 
 if __name__ == "__main__":
 	letter = "Buhu"
-	lettersize = 200 #170 #70
-	scalingFactor = 3#3
+	lettersize = 70 #170 #70
+	scalingFactor = 5#3
 	resizeFactor = 1#5
+	relativizFactor = 4000
 	font = ImageFont.truetype("fonts/Helv25.ttf", lettersize)
 	#font = ImageFont.truetype("Arial.ttf", lettersize)
 	picturePath = "pictures/pirate.bmp"
@@ -204,6 +228,7 @@ if __name__ == "__main__":
 	paths = build_paths(pix, scalingFactor)
 	if scalingFactor > 1:
 		paths = fill_scaling_gaps(paths, scalingFactor)
-	#safeImage(paths, size, scalingFactor, safePath)
+	safeImage(paths, size, scalingFactor, safePath)
+	paths = relativizer(paths, relativizFactor)
 	#print_paths(paths)
 	talker(paths)
