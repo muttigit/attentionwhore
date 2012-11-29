@@ -7,6 +7,15 @@ if __name__=="__main__":
 	for line in svgfile:
 		svgcode += line
 	endPos = 0
+	
+	"""startPosW = svgcode.find('''width="''') + 7
+	endPosW = svgcode.find('''"''', startPosW)
+	paths.append(svgcode[startPosW:endPosW]
+	
+	startPosH = svgcode.find('''height="''') + 8
+	endPosH = svgcode.find('''"''', startPosW)
+	paths.append(svgcode[startPosW:endPosW]"""
+	
 	while True:
 		startPos = svgcode.find("<path id=", endPos)
 		if startPos == -1:
