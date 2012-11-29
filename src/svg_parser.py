@@ -7,16 +7,17 @@ def parseSVGFile(svgFilePath):
 	svgFile.close()
 
 	for svgLine in svgFileLines:
-		pathLines = re.search('d=', svgLine)
+		pathRegExp = re.compile('''(d=")([a-zA-Z]{1,2}([\+\-]?\d+(\.\d+)?[\s,]?)*)*("/>)''')
+		pathRegExp2 =  re.compile('''(d=")([a-zA-Z]{1,2}(((\+|\-)?(\d+|\.\d+)|\s|,)*))*"/>''')
+		pathLines = pathRegExp.findall(svgLine)	
 		
-		print svgLine
+		print pathLines
 		
 		if pathLines == None:
 			print "NOPE"
-		
-		#print 'pathLines-Size: ' + len(pathLines)
-		#for pathLine in pathLines:
-			#print pathLine
+		#else:
+			#for pathLine in pathLines:
+				#print pathLine
 	#print 'svgLines-Size: ' + len(svgLines)
 
 if __name__ == '__main__':

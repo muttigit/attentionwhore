@@ -100,10 +100,10 @@ if __name__ == "__main__":
 	
 	x = 0.2#0 #0.024 + 0.033 + 0.42
 	y = 0.2#-0.4
-	z = 0.2#0.2
+	z = 0.12#0.2
 	roll = 0.0#-math.pi / 2.0 #0.0
 	pitch = math.pi / 2.0
-	yaw = math.pi / 2.0 #0.0
+	yaw = -math.pi / 2.0 #0.0
 	
 	while (True):
 		x = float(raw_input("X: "))
