@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('youbot_examples')
+import roslib; roslib.load_manifest('attentionwhore')
 import rospy
 import brics_actuator.msg
 

@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+
+import roslib; roslib.load_manifest('attentionwhore')
+import rospy
+from attentionwhore.msg import Trajectory
+from attentionwhore.msg import Point
+#from std_msgs.msg import String
 from PIL import Image, ImageDraw, ImageFont
 
 def draw_letter(letter, font, resizeFactor):
@@ -156,27 +163,40 @@ def safeImage(paths, size, scalingFactor, safePath):
 			image.putpixel((paths[i][j][0], paths[i][j][1]), (255,0,0))
 	image.save(safePath)
 
+def print_paths(paths):
+	for i in range(len(paths)):
+		print paths[i]
+	print len(paths)
+
 	
+def talker(paths):
+	#pub = rospy.Publisher('/string', String)
+	pub = rospy.Publisher('/trajectory', Trajectory)
+	rospy.init_node('ik_solver_talker')
+	for i in range(len(paths)-1):
+		if rospy.is_shutdown():
+			break
+		traject = Trajectory()
+		for j in range(len(paths[i])):
+			p = Point(paths[i][j][0],paths[i][j][0])
+			traject.trajectory.append(p)
+		pub.publish(traject)
+		#rospy.loginfo(traject)
+
+
 if __name__ == "__main__":
 	letter = "Buhu"
 	lettersize = 200 #170 #70
-	scalingFactor = 1#3
+	scalingFactor = 3#3
 	resizeFactor = 1#5
-	#font = ImageFont.truetype("C:/Users/Xell/Desktop/Studium/lane/Helv25.ttf", lettersize)
-	#font = ImageFont.truetype("C:/Users/Xell/Desktop/Studium/Fonts/Ruritania-Outline.ttf", lettersize)
-	font = ImageFont.truetype("Fonts/Ruritania-Outline.ttf", lettersize)
+	font = ImageFont.truetype("fonts/Helv25.ttf", lettersize)
 	#font = ImageFont.truetype("Arial.ttf", lettersize)
-	#path = "C:/Users/Xell/Desktop/Studium/Logo_Lego.bmp"
-	#picturePath = "pirate.bmp"
-	#picturePath = "kuro_valshe___fun_fun_fun.bmp"
-	picturePath = "Pictures/rainbow_dash.bmp"
-	#safePath = "C:\Users\Xell\Desktop\Studium\Test1.png", "PNG"
-	safePath = "Test2.png"
-	#path = "C:/Users/Xell/Desktop/Studium/pirate.bmp"
+	picturePath = "pictures/pirate.bmp"
+	safePath = "Test.png"
 	invert = True
 	
-	#size_and_pix = draw_letter(letter, font, resizeFactor)
-	size_and_pix = draw_picture(picturePath, invert, resizeFactor)
+	size_and_pix = draw_letter(letter, font, resizeFactor)
+	#size_and_pix = draw_picture(picturePath, invert, resizeFactor)
 	
 	size = size_and_pix[0]
 	pix = size_and_pix[1]
@@ -184,9 +204,6 @@ if __name__ == "__main__":
 	paths = build_paths(pix, scalingFactor)
 	if scalingFactor > 1:
 		paths = fill_scaling_gaps(paths, scalingFactor)
-	safeImage(paths, size, scalingFactor, safePath)
-	
-	for i in range(len(paths)):
-		print paths[i]
-	
-	print len(paths)
+	#safeImage(paths, size, scalingFactor, safePath)
+	#print_paths(paths)
+	talker(paths)
