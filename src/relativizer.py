@@ -1,27 +1,13 @@
 #!/usr/bin/env python
 
-minVal = 0
-maxVal = 0
-
+import svg_parser2
 finalPath = []
 
-def minMaxAbs(val):
-	global minVal
-	global maxVal
-	
-	if val > maxVal:
-		maxVal = val
-	if val < minVal:
-		minVal = val
-
-def minMaxRel(val):
-	print 'Hello'
-
 def relativize(svgPaths):
-	startX
-	startY
+	#startX
+	#startY
 	
-	global finalPath = []
+	global finalPath 
 	
 	"""	Read and push coordinates
 		Check for min and max Values
@@ -30,35 +16,34 @@ def relativize(svgPaths):
 	svgPaths.reverse()
 	while(len(svgPaths) != 0):
 		pathType = svgPaths.pop()
-		if pathType == 'M':
+		if pathType =='': 
+			print "ZERO CHAR REMOVED"
+
+		elif pathType == 'M':
 			x = svgPaths.pop()
 			y = svgPaths.pop()
 			startX = x
 			startY = y
-			tripel = ['M', x, y]
-			
-			finalPath.append(tripel)
-			
-			minMaxAbs(x)
-			minMaxAbs(y)
-			
-			print simplePath
-		elif pathType == 'm':
-			prevX = finalPath[len(finalPath)] - 2
-			prevY = finalPath[len(finalPath)] - 1
-			
-			x = svgPaths.pop() + prevX
-			y = svgPaths.pop() + prevY
 			simplePath = ['M', x, y]
 			
 			finalPath.append(simplePath)
 			
-			minMaxAbs(x)
-			minMaxAbs(y)
+			print simplePath
+
+		elif pathType == 'm':
+			prevX = finalPath[len(finalPath) - 2]
+			prevY = finalPath[len(finalPath) - 1]
+			
+			x = svgPaths.pop() #+ prevX
+			y = svgPaths.pop() #+ prevY
+			simplePath = ['M', x, y]
+			
+			finalPath.append(simplePath)
 			
 			print simplePath
+
 		elif pathType == 'C':
-			#Bézier Curve Poles
+			#Bezier Curve Poles
 			x1 = svgPaths.pop()
 			y1 = svgPaths.pop()
 			x2 = svgPaths.pop()
@@ -67,71 +52,52 @@ def relativize(svgPaths):
 			x = svgPaths.pop()
 			y = svgPaths.pop()
 			
-			simplePath = ['D', x1, y1, x2, y2, x, y]
+			simplePath = ['C', x1, y1, x2, y2, x, y]
 			
 			finalPath.append(simplePath)
 			
-			minMaxAbs(x1)
-			minMaxAbs(y1)
-			minMaxAbs(x2)
-			minMaxAbs(y2)
-			minMaxAbs(x)
-			minMaxAbs(y) 
-			
 			print simplePath
+
 		elif pathType == 'c':
-			prevX = finalPath[len(finalPath)] - 2
-			prevY = finalPath[len(finalPath)] - 1
+			prevX = finalPath[len(finalPath) - 2]
+			prevY = finalPath[len(finalPath) - 1]
 			
-			#Bézier Curve Poles
-			x1 = svgPaths.pop() + prevX
-			y1 = svgPaths.pop() + prevY
-			x2 = svgPaths.pop() + prevX
-			y2 = svgPaths.pop() + prevY
+			#Bezier Curve Poles
+			x1 = svgPaths.pop() #+ prevX
+			y1 = svgPaths.pop() #+ prevY
+			x2 = svgPaths.pop() #+ prevX
+			y2 = svgPaths.pop() #+ prevY
 			#Target Point
-			x = svgPaths.pop() + prevX
-			y = svgPaths.pop() + prevY
+			x = svgPaths.pop() #+ prevX
+			y = svgPaths.pop() #+ prevY
 			
-			simplePath = ['D', x1, y1, x2, y2, x, y]
+			simplePath = ['c', x1, y1, x2, y2, x, y]
 			
 			finalPath.append(simplePath)
-			
-			minMaxAbs(x1)
-			minMaxAbs(y1)
-			minMaxAbs(x2)
-			minMaxAbs(y2)
-			minMaxAbs(x)
-			minMaxAbs(y) 
-			
-			print simplePath
+
 		elif pathType == 'Z':
-			simplePath = ['D', startX, startY]
+			simplePath = ['Z',startX ,startY]
 			
 			finalPath.append(simplePath)
 			
 			print simplePath
-		elif pathType == 'z':
-			simplePath = ['D', startX, startY]
-			
-			finalPath.append(simplePath)
-			
-			print simplePath
+
 		elif pathType == 'l':
-			prevX = finalPath[len(finalPath)] - 2
-			prevY = finalPath[len(finalPath)] - 1
+			prevX = finalPath[len(finalPath) - 2] 
+			prevY = finalPath[len(finalPath) - 1]
 			
-			x = svgPaths.pop() + prevX
-			y = svgPaths.pop() + prevY
+			x = svgPaths.pop() #+ prevX
+			y = svgPaths.pop() #+ prevY
 			
-			simplePath = ['D', x, y]
+			simplePath = ['l', x, y]
 			
 			finalPath.append(simplePath)
 			
-			minMaxAbs(x)
-			minMaxAbs(y) 
 			
 			print simplePath		
-	
+		else:
+#			print "FIRST ELEMENT WAS:"+ str(pathType)+"\n SOMETHING WENT WRONG !\nBEWARE WILL PUSH ON LIST ANYWAY !!!!!\n DIRTY DIRTY FIX !!!!"	
+			finalPath[len(finalPath)-1].append(pathType)
 	""" MUST DO:
 		Relativize maximum to 18 units!
 		x=0 at X=-0.09 in cartesian frame
@@ -145,5 +111,8 @@ def relativize(svgPaths):
 if __name__ == '__main__':
 	
 	""" main """
-	list_path = ['M', 4, 3, 'c', 10, 11, 'M', 5, 6]
-	relativize(list_path)
+	listOfPaths = svg_parser2.getListOfPaths()
+	for x in listOfPaths:
+		zList=listOfPaths
+		relativize(x)
+		print "The Final PAth is: "+str(finalPath)	
