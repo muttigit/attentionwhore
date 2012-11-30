@@ -4,7 +4,6 @@ import roslib; roslib.load_manifest('attentionwhore')
 import rospy
 from attentionwhore.msg import Trajectory
 from attentionwhore.msg import Point
-#from std_msgs.msg import String
 from PIL import Image, ImageDraw, ImageFont
 
 def draw_letter(letter, font, resizeFactor):
@@ -60,7 +59,57 @@ def visual_control(pix, size):
 		print len(pic[0])
 	pass
 
-def build_paths(pix, scalingFactor):
+def calc_diff(p1, p2):
+	diffX = abs(p1[0] - p2[0])
+	diffY = abs(p1[1] - p2[1])
+	return (diffX*diffX) + (diffY*diffY)
+
+def sort_paths(paths):
+	lenP = len(paths)
+	newPaths = []
+	newPaths.append(paths[0])
+	del paths[0]
+	while True:
+		diffMin = 99999999
+		diffMinIndex = -1
+		for i in range(len(paths)):
+			diff = calc_diff(paths[i][0], newPaths[len(newPaths)-1][len(newPaths[len(newPaths)-1])-1])
+			if diff < diffMin:
+				diffMin = diff
+				diffMinIndex = i
+		#print diffMin
+		#print diffMinIndex
+		newPaths.append(paths[diffMinIndex])
+		del paths[diffMinIndex]
+		if len(newPaths) == lenP:
+			break
+	return newPaths
+
+def del_small_paths(paths):
+	bigPaths = []
+	#bigPaths = []
+	for i in range(len(paths)):
+		#if len(paths[i]) < 2:
+		tmpPath = paths.pop()
+		if len(tmpPath) > 1:
+			bigPaths.append(tmpPath)
+			#smallPaths.append(i)
+	print len(bigPaths)
+	return bigPaths
+
+def path_merge(paths, scalingFactor):
+	for i in range(len(paths)-3, -1, -1): #-3
+		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
+		if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
+			paths[i+1].reverse()
+			paths[i] = paths[i+1] + paths[i]
+			del paths[i+1]
+		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
+			paths[i] = paths[i+1] + paths[i]
+			del paths[i+1]
+	return paths
+
+def build_paths(pix, scalingFactor, size):
 	searchPos = ((-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1))
 	paths = []
 	
@@ -101,7 +150,7 @@ def build_paths(pix, scalingFactor):
 		if not foundStartPoint:
 			break
 
-	for i in range(len(paths)-3, -1, -1):
+	for i in range(len(paths)-3, -1, -1): #-3
 		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
 		if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
 			paths[i+1].reverse()
@@ -110,6 +159,26 @@ def build_paths(pix, scalingFactor):
 		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
 			paths[i] = paths[i+1] + paths[i]
 			del paths[i+1]
+	
+	del paths[len(paths)-1]
+	print len(paths)
+	if len(paths) > 1:
+		paths = sort_paths(paths)
+########################
+		paths = path_merge(paths, scalingFactor)
+#		for i in range(len(paths)-3, -1, -1): #-3
+#			#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
+#			if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
+#				paths[i+1].reverse()
+#				paths[i] = paths[i+1] + paths[i]
+#				del paths[i+1]
+#			elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
+#				paths[i] = paths[i+1] + paths[i]
+#				del paths[i+1]
+#######################
+	print len(paths)
+	paths = del_small_paths(paths)
+	print len(paths)
 	return paths
 
 def fill_scaling_gaps(paths, scalingFactor):
@@ -165,19 +234,7 @@ def safeImage(paths, size, scalingFactor, safePath):
 	image.save(safePath)
 
 def relativizer(paths, relativizFactor):
-	#for i in range(len(paths)):
-	#	newPath = []
-	#	for j in range(len(paths[i])):
-	#		x = paths[i][j][0] / float(relativizFactor)
-	#		y = paths[i][j][1] / float(relativizFactor)
-	#		if x > 0.22:
-	#			print "Error x"
-	#			print x
-	#		if y > 0.182:
-	#			print "Error y"
-	#			print y
-	#		newPath.append((x, y))
-	#	newPaths.append(newPath)
+	expRuntime = 0
 	limitX = 0.22
 	limitY = 0.177
 	x = []
@@ -186,14 +243,16 @@ def relativizer(paths, relativizFactor):
 		for j in range(len(paths[i])):
 			x.append(paths[i][j][0])
 			y.append(paths[i][j][1])
+			expRuntime += 0.17
 	minX = min(x)
 	maxX = max(x)
 	minY = min(y)
 	maxY = max(y)
 	minRelFac = max((maxX - minX) / limitX, (maxY - minY) / limitY)
-	print "Minimal Rel Fac: " + str(minRelFac)
+	print "Minimal Rel Fac:  " + str(minRelFac)
+	print "Expected Runtime: " + str(expRuntime/60) + "min"
 	if minRelFac > relativizFactor:
-		print "Rel Fac to big:  " + str(relativizFactor)
+		print "Rel Fac to big:   " + str(relativizFactor)
 		return []
 	else:
 		newPaths = []
@@ -215,11 +274,10 @@ def print_paths(paths):
 
 	
 def talker(paths):
-	#pub = rospy.Publisher('/string', String)
 	pub = rospy.Publisher('/trajectory', Trajectory)
 	rospy.init_node('ik_solver_talker')
 	rospy.sleep(0.5)
-	for i in range(len(paths)-1):
+	for i in range(len(paths)):
 		if rospy.is_shutdown():
 			break
 		traject = Trajectory()
@@ -228,33 +286,6 @@ def talker(paths):
 			traject.trajectory.append(p)
 			#print traject.trajectory
 		pub.publish(traject)
-		rospy.sleep(5)
-		rospy.loginfo(traject)
-
-
-if __name__ == "__main__":
-	letter = "C"
-	lettersize = 70 #170 #70 nice for letters, 70, 5, 4000
-	scalingFactor = 5#3#5#3
-	resizeFactor = 1#0.5#1#5
-	relativizFactor = 4000 #4000
-	font = ImageFont.truetype("fonts/Helv25.ttf", lettersize)
-	#font = ImageFont.truetype("Arial.ttf", lettersize)
-	#picturePath = "pictures/pirate.bmp"
-	picturePath = "pictures/phoenix_bw.bmp"
-	safePath = "Test.png"
-	invert = True
-	
-	size_and_pix = draw_letter(letter, font, resizeFactor)
-	#size_and_pix = draw_picture(picturePath, invert, resizeFactor)
-	
-	size = size_and_pix[0]
-	pix = size_and_pix[1]
-	#visual_control(pix, size)
-	paths = build_paths(pix, scalingFactor)
-	if scalingFactor > 1:
-		paths = fill_scaling_gaps(paths, scalingFactor)
-	safeImage(paths, size, scalingFactor, safePath)
-	paths = relativizer(paths, relativizFactor)
-	#print_paths(paths)
-	talker(paths)
+		#print len(paths[i])
+		#rospy.sleep(5)
+		#rospy.loginfo(traject)

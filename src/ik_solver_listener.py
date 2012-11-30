@@ -121,16 +121,31 @@ def callback(data):
 	z = 0.122#0.122
 	#rospy.loginfo(data.data)
 	#rospy.loginfo(data.trajectory)
-	transmove(data.trajectory[0].x - 0.09, data.trajectory[0].y - 0.504, 0.18, roll, pitch, yaw)
-	rospy.sleep(1)
+	xCorrection = -0.09
+	yCorrection = -0.499
+	#xLimit = 0#0.22
+	yLimit = 0.177
+	zHigh = 0.14
+	zTmp = zHigh
+	#transmove((xLimit - data.trajectory[0].x) + xCorrection, (yLimit - data.trajectory[0].y) + yCorrection, zForNewPath, roll, pitch, yaw)
+	while zTmp > z:
+		zTmp -= 1.0 / 4000
+		print zTmp
+		transmove(data.trajectory[0].x + xCorrection, (yLimit - data.trajectory[0].y) + yCorrection, zTmp, roll, pitch, yaw)
+		print "Down"
+		#rospy.sleep(0.5)
 	for i in range(len(data.trajectory)):
-		x = data.trajectory[i].x - 0.09
-		y = data.trajectory[i].y - 0.504
+		x = data.trajectory[i].x + xCorrection
+		#x = (xLimit - data.trajectory[i].x) + xCorrection
+		y = (yLimit - data.trajectory[i].y) + yCorrection
 		#print "(" + str(x) +", " + str(y) + "), ",
 		transmove(x, y, z, roll, pitch, yaw)
 		#rospy.sleep(0.1)
-	transmove(data.trajectory[len(data.trajectory)-1].x - 0.09, data.trajectory[len(data.trajectory)-1].y - 0.504, 0.18, roll, pitch, yaw)
-	rospy.sleep(1)
+	#transmove((xLimit - data.trajectory[len(data.trajectory)-1].x) + xCorrection, (yLimit - data.trajectory[len(data.trajectory)-1].y) + yCorrection, zForNewPath, roll, pitch, yaw)
+	while zTmp < zHigh:
+		zTmp += 1.0 / 4000
+		transmove(data.trajectory[len(data.trajectory)-1].x + xCorrection, (yLimit - data.trajectory[len(data.trajectory)-1].y) + yCorrection, zTmp, roll, pitch, yaw)
+		#rospy.sleep(0.5)
 	
 
 def tester():
@@ -138,7 +153,7 @@ def tester():
 	roll = 0.0#-math.pi / 2.0 #0.0
 	pitch = math.pi / 2.0
 	yaw = -math.pi / 2.0 #0.0
-	z = 0.122#0.122
+	z = 0.122
 	x = 0.0
 	y = -0.4
 	#for i in range(100):
@@ -146,6 +161,7 @@ def tester():
 		#transmove(x, y, z, roll, pitch, yaw)
 	for i in range(len(test)):
 		x = test[i][0] - 0.09
+		#x = (0.22 - test[i][0]) - 0.09
 		y = test[i][1] - 0.504
 		transmove(x, y, z, roll, pitch, yaw)
 
@@ -159,5 +175,8 @@ if __name__ == '__main__':
 	rospy.sleep(0.5)
 	armpub = rospy.Publisher("/arm_1/arm_controller/position_command", brics_actuator.msg.JointPositions)
 	iks = SimpleIkSolver()
+	rospy.sleep(1)
+	transmove(-0.09, -0.322, 0.17, 0.0, math.pi / 2.0, -math.pi / 2.0)
+	rospy.sleep(1)
 	#tester()
 	listener()
