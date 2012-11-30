@@ -59,17 +59,32 @@ def visual_control(pix, size):
 		print len(pic[0])
 	pass
 
+def calc_diff(p1, p2):
+	diffX = abs(p1[0] - p2[0])
+	diffY = abs(p1[1] - p2[1])
+	return (diffX*diffX) + (diffY*diffY)
+
 def sort_paths(paths):
+	lenP = len(paths)
 	newPaths = []
 	newPaths.append(paths[0])
-	lePa = len(paths)
-	for i in range(lePa-1):
-		print paths[i]
-		print ""
-		print ""
-		for j in range((lePa-i)-1):
-			tmp = i+j
-			print paths[tmp][len(paths[tmp])-1]
+	del paths[0]
+	while True:
+		diffMin = 99999999
+		diffMinIndex = -1
+		for i in range(len(paths)):
+			diff = calc_diff(paths[i][0], newPaths[len(newPaths)-1][len(newPaths[len(newPaths)-1])-1])
+			if diff < diffMin:
+				diffMin = diff
+				diffMinIndex = i
+		#print diffMin
+		#print diffMinIndex
+		newPaths.append(paths[diffMinIndex])
+		del paths[diffMinIndex]
+		if len(newPaths) == lenP:
+			break
+	return newPaths
+
 
 def build_paths(pix, scalingFactor, size):
 	searchPos = ((-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1))
@@ -111,7 +126,6 @@ def build_paths(pix, scalingFactor, size):
 		paths.append(path)
 		if not foundStartPoint:
 			break
-	#sort_paths(paths)
 
 	for i in range(len(paths)-3, -1, -1):
 		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
@@ -122,6 +136,8 @@ def build_paths(pix, scalingFactor, size):
 		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
 			paths[i] = paths[i+1] + paths[i]
 			del paths[i+1]
+	del paths[len(paths)-1]
+	paths = sort_paths(paths)
 	return paths
 
 def fill_scaling_gaps(paths, scalingFactor):
@@ -186,7 +202,7 @@ def relativizer(paths, relativizFactor):
 		for j in range(len(paths[i])):
 			x.append(paths[i][j][0])
 			y.append(paths[i][j][1])
-			expRuntime += 0.1
+			expRuntime += 0.17
 	minX = min(x)
 	maxX = max(x)
 	minY = min(y)
@@ -220,7 +236,7 @@ def talker(paths):
 	pub = rospy.Publisher('/trajectory', Trajectory)
 	rospy.init_node('ik_solver_talker')
 	rospy.sleep(0.5)
-	for i in range(len(paths)-1): ##-1
+	for i in range(len(paths)): ##-1##########################################################
 		if rospy.is_shutdown():
 			break
 		traject = Trajectory()

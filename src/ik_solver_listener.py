@@ -125,11 +125,11 @@ def callback(data):
 	yCorrection = -0.499
 	#xLimit = 0#0.22
 	yLimit = 0.177
-	zHigh = 0.13
+	zHigh = 0.14
 	zTmp = zHigh
 	#transmove((xLimit - data.trajectory[0].x) + xCorrection, (yLimit - data.trajectory[0].y) + yCorrection, zForNewPath, roll, pitch, yaw)
 	while zTmp > z:
-		zTmp -= 1.0 / 5000
+		zTmp -= 1.0 / 4000
 		print zTmp
 		transmove(data.trajectory[0].x + xCorrection, (yLimit - data.trajectory[0].y) + yCorrection, zTmp, roll, pitch, yaw)
 		print "Down"
@@ -143,7 +143,7 @@ def callback(data):
 		#rospy.sleep(0.1)
 	#transmove((xLimit - data.trajectory[len(data.trajectory)-1].x) + xCorrection, (yLimit - data.trajectory[len(data.trajectory)-1].y) + yCorrection, zForNewPath, roll, pitch, yaw)
 	while zTmp < zHigh:
-		zTmp += 1.0 / 5000
+		zTmp += 1.0 / 4000
 		transmove(data.trajectory[len(data.trajectory)-1].x + xCorrection, (yLimit - data.trajectory[len(data.trajectory)-1].y) + yCorrection, zTmp, roll, pitch, yaw)
 		#rospy.sleep(0.5)
 	
