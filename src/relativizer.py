@@ -163,7 +163,7 @@ def relativize(svgPaths):
 				differenceX = getDifference(x,prevX)
 				differenceY = getDifference(y,prevY)
 				length = m.sqrt(m.pow(differenceX,2) + m.pow(differenceY,2))
-				fernandos = length/0.0003
+				fernandos = int(length/0.0003)
 				stepX = differenceX/fernandos
 				stepY = differenceY/fernandos
 				for fernando in range(0,fernandos):
@@ -184,12 +184,12 @@ def getDifference(x, y):
 
 def binomialCoefficient(n, i):
 	#In case you are calculating first Bezier Element
-	if k == 0:
+	if i == 0:
 		return 1
-	return (m.fak(n)/(m.fak(i)*m.fak(n-i)))
+	return float(m.fak(n)/(m.fak(i)*m.fak(n-i)))
 
 def sumBezierElement(n, i, t, pointList):
-	B = binomialCoefficient(n,i) * m.pow(1-t,n-i) * m.pow(t,i) * pointList[i-1][0]
+	B = binomialCoefficient(n,i) * m.pow(1-t,n-i) * m.pow(t,i) * float(pointList[i-1][0])
 
 	return B + sumBezierElement(n, i+1, t, pointList)
 
