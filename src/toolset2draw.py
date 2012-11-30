@@ -85,6 +85,29 @@ def sort_paths(paths):
 			break
 	return newPaths
 
+def del_small_paths(paths):
+	bigPaths = []
+	#bigPaths = []
+	for i in range(len(paths)):
+		#if len(paths[i]) < 2:
+		tmpPath = paths.pop()
+		if len(tmpPath) > 1:
+			bigPaths.append(tmpPath)
+			#smallPaths.append(i)
+	print len(bigPaths)
+	return bigPaths
+
+def path_merge(paths, scalingFactor):
+	for i in range(len(paths)-3, -1, -1): #-3
+		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
+		if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
+			paths[i+1].reverse()
+			paths[i] = paths[i+1] + paths[i]
+			del paths[i+1]
+		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
+			paths[i] = paths[i+1] + paths[i]
+			del paths[i+1]
+	return paths
 
 def build_paths(pix, scalingFactor, size):
 	searchPos = ((-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1))
@@ -127,7 +150,7 @@ def build_paths(pix, scalingFactor, size):
 		if not foundStartPoint:
 			break
 
-	for i in range(len(paths)-3, -1, -1):
+	for i in range(len(paths)-3, -1, -1): #-3
 		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
 		if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
 			paths[i+1].reverse()
@@ -136,8 +159,26 @@ def build_paths(pix, scalingFactor, size):
 		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
 			paths[i] = paths[i+1] + paths[i]
 			del paths[i+1]
+	
 	del paths[len(paths)-1]
-	paths = sort_paths(paths)
+	print len(paths)
+	if len(paths) > 1:
+		paths = sort_paths(paths)
+########################
+		paths = path_merge(paths, scalingFactor)
+#		for i in range(len(paths)-3, -1, -1): #-3
+#			#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
+#			if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
+#				paths[i+1].reverse()
+#				paths[i] = paths[i+1] + paths[i]
+#				del paths[i+1]
+#			elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
+#				paths[i] = paths[i+1] + paths[i]
+#				del paths[i+1]
+#######################
+	print len(paths)
+	paths = del_small_paths(paths)
+	print len(paths)
 	return paths
 
 def fill_scaling_gaps(paths, scalingFactor):
@@ -236,7 +277,7 @@ def talker(paths):
 	pub = rospy.Publisher('/trajectory', Trajectory)
 	rospy.init_node('ik_solver_talker')
 	rospy.sleep(0.5)
-	for i in range(len(paths)): ##-1##########################################################
+	for i in range(len(paths)):
 		if rospy.is_shutdown():
 			break
 		traject = Trajectory()

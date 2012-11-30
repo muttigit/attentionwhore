@@ -6,7 +6,7 @@ from toolset2draw import draw_letter, visual_control, build_paths, fill_scaling_
 from PIL import ImageFont
 
 if __name__ == "__main__":
-	letter = "C"
+	letter = "M"
 	lettersize = 70 #170 #70 nice for letters, 70, 5, 4000
 	scalingFactor = 3#3#5#3
 	resizeFactor = 1#0.5#1#5
