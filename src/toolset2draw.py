@@ -94,7 +94,6 @@ def del_small_paths(paths):
 		if len(tmpPath) > 1:
 			bigPaths.append(tmpPath)
 			#smallPaths.append(i)
-	print len(bigPaths)
 	return bigPaths
 
 def path_merge(paths, scalingFactor):
@@ -150,35 +149,15 @@ def build_paths(pix, scalingFactor, size):
 		if not foundStartPoint:
 			break
 
-	for i in range(len(paths)-3, -1, -1): #-3
-		#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
-		if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
-			paths[i+1].reverse()
-			paths[i] = paths[i+1] + paths[i]
-			del paths[i+1]
-		elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
-			paths[i] = paths[i+1] + paths[i]
-			del paths[i+1]
-	
+	paths = path_merge(paths, scalingFactor)
 	del paths[len(paths)-1]
-	print len(paths)
+	#print len(paths)
 	if len(paths) > 1:
 		paths = sort_paths(paths)
-########################
 		paths = path_merge(paths, scalingFactor)
-#		for i in range(len(paths)-3, -1, -1): #-3
-#			#print (paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])
-#			if abs(paths[i][0][0]-paths[i+1][0][0])==scalingFactor and abs(paths[i][0][1]-paths[i+1][0][1])==scalingFactor:
-#				paths[i+1].reverse()
-#				paths[i] = paths[i+1] + paths[i]
-#				del paths[i+1]
-#			elif abs(paths[i][0][0]-paths[i+1][len(paths[i+1])-1][0])<scalingFactor+1 and abs(paths[i][0][1]-paths[i+1][len(paths[i+1])-1][1])<scalingFactor+1:
-#				paths[i] = paths[i+1] + paths[i]
-#				del paths[i+1]
-#######################
-	print len(paths)
+	#print len(paths)
 	paths = del_small_paths(paths)
-	print len(paths)
+	#print len(paths)
 	return paths
 
 def fill_scaling_gaps(paths, scalingFactor):

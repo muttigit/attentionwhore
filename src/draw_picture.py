@@ -7,10 +7,10 @@ from toolset2draw import draw_picture, visual_control, build_paths, fill_scaling
 if __name__ == "__main__":
 	scalingFactor = 1#3#5#3
 	resizeFactor = 1#0.2#1#5
-	relativizFactor = 4000 #4000
+	relativizFactor = 4100 #4100
 	safePath = "Test1.png"
 	invert = True
-	picturePath = "pictures/pirate2.bmp"
+	picturePath = "pictures/Greetings.bmp"
 	#picturePath = "pictures/phoenix_bw.bmp"
 	
 	size_and_pix = draw_picture(picturePath, invert, resizeFactor)	
