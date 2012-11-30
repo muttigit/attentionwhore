@@ -10,14 +10,17 @@ def getListOfPaths ():
 	endPos = 0
 	
 	"""startPosW = svgcode.find('''width="''') + 7
-	endPosW = svgcode.find('''"''', startPosW)
-	paths.append(svgcode[startPosW:endPosW]
-	
-	startPosH = svgcode.find('''height="''') + 8
-	endPosH = svgcode.find('''"''', startPosW)
-	paths.append(svgcode[startPosW:endPosW]"""
-	
-	while( True):
+	if startPosW != -1:
+		endPosW = svgcode.find('''"''', startPosW)
+		path.append(svgcode[startPosW:endPosW-1])
+		print svgcode[startPosW:endPosW-1]
+		
+		startPosH = svgcode.find('''height="''') + 8
+		endPosH = svgcode.find('''"''', startPosW)
+		path.append(svgcode[startPosH:endPosH-1])
+		print svgcode[startPosH:endPosH-1]"""
+
+	while( True):	
 		startPos = svgcode.find("<path id=", endPos)
 		if startPos == -1:
 			break
