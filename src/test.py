@@ -12,8 +12,8 @@ def draw_letter(letter, font, resizeFactor):
 	size = ImageDraw.Draw(image).textsize(letter, font=font)
 	image = image.resize(size)
 	ImageDraw.Draw(image).text((0,0), letter, font=font, fill=1)
-	if resizeFactor > 1:
-		size = (size[0]*resizeFactor, size[1]*resizeFactor)
+	if not resizeFactor == 1:
+		size = (int(round(size[0]*float(resizeFactor))), int(round(size[1]*float(resizeFactor))))
 		image = image.resize((size[0], size[1]))
 	pix = image.load()
 	return size, pix
@@ -30,8 +30,8 @@ def invert_pic(size, pix):
 def draw_picture(picturePath, invert, resizeFactor):
 	image = Image.open(picturePath)
 	size = image.size
-	if resizeFactor > 1:
-		size = (size[0]*resizeFactor, size[1]*resizeFactor)
+	if not resizeFactor == 1:
+		size = (int(round(size[0]*float(resizeFactor))), int(round(size[1]*float(resizeFactor))))
 		image = image.resize((size[0], size[1]))
 	pix = image.load()
 	if invert:
@@ -165,20 +165,45 @@ def safeImage(paths, size, scalingFactor, safePath):
 	image.save(safePath)
 
 def relativizer(paths, relativizFactor):
-	newPaths = []
+	#for i in range(len(paths)):
+	#	newPath = []
+	#	for j in range(len(paths[i])):
+	#		x = paths[i][j][0] / float(relativizFactor)
+	#		y = paths[i][j][1] / float(relativizFactor)
+	#		if x > 0.22:
+	#			print "Error x"
+	#			print x
+	#		if y > 0.182:
+	#			print "Error y"
+	#			print y
+	#		newPath.append((x, y))
+	#	newPaths.append(newPath)
+	limitX = 0.22
+	limitY = 0.177
+	x = []
+	y = []
 	for i in range(len(paths)):
-		newPath = []
 		for j in range(len(paths[i])):
-			x = paths[i][j][0] / float(relativizFactor)
-			y = paths[i][j][1] / float(relativizFactor)
-			if x > 0.22:
-				print "Error x"
-				print x
-			if y > 0.182:
-				print "Error y"
-				print y
-			newPath.append((x, y))
-		newPaths.append(newPath)
+			x.append(paths[i][j][0])
+			y.append(paths[i][j][1])
+	minX = min(x)
+	maxX = max(x)
+	minY = min(y)
+	maxY = max(y)
+	minRelFac = max((maxX - minX) / limitX, (maxY - minY) / limitY)
+	print "Minimal Rel Fac: " + str(minRelFac)
+	if minRelFac > relativizFactor:
+		print "Rel Fac to big:  " + str(relativizFactor)
+		return []
+	else:
+		newPaths = []
+		for i in range(len(paths)):
+			newPath = []
+			for j in range(len(paths[i])):
+				x = (paths[i][j][0] - minX)/ float(relativizFactor)
+				y = (paths[i][j][1] - minY)/ float(relativizFactor)
+				newPath.append((x, y))
+			newPaths.append(newPath)
 	#print newPaths
 	return newPaths
 	
@@ -208,14 +233,15 @@ def talker(paths):
 
 
 if __name__ == "__main__":
-	letter = "Buhu"
-	lettersize = 70 #170 #70
-	scalingFactor = 5#3
-	resizeFactor = 1#5
-	relativizFactor = 4000
+	letter = "C"
+	lettersize = 70 #170 #70 nice for letters, 70, 5, 4000
+	scalingFactor = 5#3#5#3
+	resizeFactor = 1#0.5#1#5
+	relativizFactor = 4000 #4000
 	font = ImageFont.truetype("fonts/Helv25.ttf", lettersize)
 	#font = ImageFont.truetype("Arial.ttf", lettersize)
-	picturePath = "pictures/pirate.bmp"
+	#picturePath = "pictures/pirate.bmp"
+	picturePath = "pictures/phoenix_bw.bmp"
 	safePath = "Test.png"
 	invert = True
 	
